@@ -1,1 +1,1 @@
-# Ruby-challenge
+# Ruby Challenge
