@@ -10,8 +10,13 @@ class Server
   def start
     loop do
       Thread.start(@server.accept) do |client|
-        handle(client)
-        client.close
+        begin
+          handle(client)
+        rescue StandardError => e
+          client.write("SERVER_ERROR #{e}\r\n")
+        ensure
+          client.close
+        end
       end
     end
   end
@@ -23,8 +28,7 @@ class Server
   end
 
   def process(request)
-    command, key, value = request.split
-    puts(command, key, value)
+    puts(request)
     'done'
   end
 end
