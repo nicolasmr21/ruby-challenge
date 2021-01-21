@@ -4,7 +4,7 @@ class Server
   def initialize(port)
     @storage = { '2' => ['database', 15, 4000, 8, 0], '3' => ['databasx', 11, 6000, 8, 0] }
     @server = TCPServer.new(port)
-    puts "Server listening on port: #{port}"
+    puts "SERVER LISTENING ON PORT: #{port}"
   end
 
   def start
@@ -60,7 +60,6 @@ class Server
       response += "VALUE #{key} #{item[1]} #{item[2]} #{item[3]} #{item[4]}\r\n#{item[0]}\r\n"
     end
     response += "END\r\n"
-    response
   end
 
   def set(key, flags, exptime, bytes, data)
