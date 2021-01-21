@@ -16,7 +16,7 @@ class Client
 
   def request(command, data)
     socket = TCPSocket.new(@host, @port)
-    socket.write("#{command}\r\n#{data}\r\n")
+    socket.write("#{command}#{data}")
     socket.close_write
     response = socket.read
     puts response
