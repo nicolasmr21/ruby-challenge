@@ -28,19 +28,24 @@ class Server
   end
 
   def process(request)
-    lines = request.split("\n")
-    commands = lines[0].split
-    data = lines[1]
-    command = commands.shift.upcase
-    puts "PROCESS #{command} AT #{Time.now}"
-    case command
+    commands, data = format_request(request)
+    action = commands.shift.upcase
+    puts "PROCESS #{action} AT #{Time.now}"
+    case action
     when 'GET'
       get(commands[0])
     when 'GETS'
       gets(commands)
     when 'SET'
       set(commands[0], commands[1], commands[2], commands[3], data)
+    when 'ADD'
+      add(commands[0], commands[1], commands[2], commands[3], data)
     end
+  end
+
+  def format_request(request)
+    lines = request.split("\n")
+    [lines[0].split, lines[1]]
   end
 
   def get(key)
@@ -61,6 +66,15 @@ class Server
   def set(key, flags, exptime, bytes, data)
     @storage[key] = [data, flags, exptime, bytes, 0]
     "STORED\r\n"
+  end
+
+  def add(key, flags, exptime, bytes, data)
+    if @storage[key].nil?
+      @storage[key] = [data, flags, exptime, bytes, 0]
+      "STORED\r\n"
+    else
+      "NOT_STORED\r\n"
+    end
   end
 end
 
