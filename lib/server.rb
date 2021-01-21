@@ -4,12 +4,12 @@ class Server
   def initialize(port)
     @storage = {}
     @server = TCPServer.new(port)
+    puts "Server listening on port: #{port}"
   end
 
   def start
     loop do
       Thread.start(@server.accept) do |client|
-        puts "connected to #{client}"
         handle(client)
         client.close
       end
@@ -25,7 +25,7 @@ class Server
   def process(request)
     command, key, value = request.split
     puts(command, key, value)
-    return 'done'
+    'done'
   end
 end
 

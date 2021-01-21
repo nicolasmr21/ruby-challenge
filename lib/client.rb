@@ -2,7 +2,8 @@ require 'socket'
 
 class Client
   def initialize(host, port)
-    @socket = TCPSocket.new(host, port)
+    @host = host
+    @port = port
   end
 
   def start
@@ -13,8 +14,12 @@ class Client
   end
 
   def request(string)
-    @socket.write(string)
-    @socket.read
+    socket = TCPSocket.new(@host, @port)
+    socket.write(string)
+    socket.close_write
+    response = socket.read
+    puts response
+    socket.close
   end
 end
 
