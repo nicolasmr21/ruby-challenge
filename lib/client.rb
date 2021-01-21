@@ -8,15 +8,15 @@ class Client
 
   def start
     loop do
-      command = gets
-      data = gets unless command.include? 'get'
+      command = gets.chomp
+      data = gets.chomp unless command.include? 'get'
       request(command, data)
     end
   end
 
   def request(command, data)
     socket = TCPSocket.new(@host, @port)
-    socket.write("#{command}#{data}")
+    socket.write("#{command}\r\n#{data}\r\n")
     socket.close_write
     response = socket.read
     puts response
