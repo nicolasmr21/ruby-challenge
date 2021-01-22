@@ -100,7 +100,7 @@ class Server
       @storage[key] = [item[0] + data, item[1], item[2], item[3] + bytes, 0]
       "STORED\r\n"
     else
-      "NOT_FOUND\r\n"
+      "NOT_STORED\r\n"
     end
   end
 
@@ -110,7 +110,7 @@ class Server
       @storage[key] = [data + item[0], item[1], item[2], item[3] + bytes, 0]
       "STORED\r\n"
     else
-      "NOT_FOUND\r\n"
+      "NOT_STORED\r\n"
     end
   end
 
