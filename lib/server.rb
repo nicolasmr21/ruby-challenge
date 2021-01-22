@@ -41,6 +41,8 @@ class Server
       set(commands[0], commands[1], commands[2], commands[3], data)
     when 'ADD'
       add(commands[0], commands[1], commands[2], commands[3], data)
+    else
+      "ERROR\r\n"
     end
   end
 
