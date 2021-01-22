@@ -3,26 +3,35 @@ require 'socket'
 class Server
 
   def initialize(port)
-    @storage = { '2' => ['database', 15, 4000, 8, 0], '3' => ['databasx', 11, 6000, 8, 0] }
+    @storage = { '2' => ['database', 15, 4000, 8, 0] }
     @server = TCPServer.new(port)
+    @descriptors = [@server]
     puts "SERVER LISTENING ON PORT: #{port}"
   end
 
   def start
     loop do
-      Thread.start(@server.accept) do |client|
-        begin
-          handle(client)
-        rescue StandardError => e
-          client.write("SERVER_ERROR #{e.message}\r\n")
-        ensure
-          client.close
+      res = select(@descriptors, nil, nil, nil)
+      next if res.nil?
+      res[0].each do |socket|
+        if socket == @server
+          accept_new_connection
+        elsif socket.eof?
+          socket.close
+          @descriptors.delete(socket)
+        else
+          handle_client(socket)
         end
       end
     end
   end
 
-  def handle(socket)
+  def accept_new_connection
+    client = @server.accept
+    @descriptors.push(client)
+  end
+
+  def handle_client(socket)
     request = socket.read
     response = process(request)
     socket.write(response)
