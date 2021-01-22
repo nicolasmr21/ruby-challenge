@@ -2,7 +2,7 @@ require './persistence_unit'
 
 class MemcachedManager
   def initialize
-    @storage = {}
+    @storage = PersistenceUnit.new
   end
 
   def process(action, commands, data)
@@ -27,27 +27,27 @@ class MemcachedManager
   end
 
   def get(key)
-    item = @storage[key]
+    item = @storage.get(key)
     "VALUE #{key} #{item[1]} #{item[2]} #{item[3]} #{item[4]}\r\n#{item[0]}\r\nEND\r\n"
   end
 
   def gets(keys)
     response = ''
     keys.each do |key|
-      item = @storage[key]
+      item = @storage.get(key)
       response += "VALUE #{key} #{item[1]} #{item[2]} #{item[3]} #{item[4]}\r\n#{item[0]}\r\n"
     end
     response += "END\r\n"
   end
 
   def set(key, flags, exptime, bytes, data)
-    @storage[key] = [data, flags, exptime, bytes, 0]
+    @storage.set(key, [data, flags, exptime, bytes, 0])
     "STORED\r\n"
   end
 
   def add(key, flags, exptime, bytes, data)
-    if @storage[key].nil?
-      @storage[key] = [data, flags, exptime, bytes, 0]
+    if !@storage.exist(key)
+      @storage.set(key, [data, flags, exptime, bytes, 0])
       "STORED\r\n"
     else
       "NOT_STORED\r\n"
@@ -55,8 +55,8 @@ class MemcachedManager
   end
 
   def replace(key, flags, exptime, bytes, data)
-    if !@storage[key].nil?
-      @storage[key] = [data, flags, exptime, bytes, 0]
+    if @storage.exist(key)
+      @storage.set(key, [data, flags, exptime, bytes, 0])
       "STORED\r\n"
     else
       "NOT_STORED\r\n"
@@ -64,9 +64,9 @@ class MemcachedManager
   end
 
   def append(key, bytes, data)
-    item = @storage[key]
+    item = @storage.get(key)
     if !item.nil?
-      @storage[key] = [item[0] + data, item[1], item[2], item[3] + bytes, 0]
+      @storage.set(key, [item[0] + data, item[1], item[2], item[3] + bytes, 0])
       "STORED\r\n"
     else
       "NOT_STORED\r\n"
@@ -76,7 +76,7 @@ class MemcachedManager
   def prepend(key, bytes, data)
     item = @storage[key]
     if !item.nil?
-      @storage[key] = [data + item[0], item[1], item[2], item[3] + bytes, 0]
+      @storage.set(key, [data + item[0] , item[1], item[2], item[3] + bytes, 0])
       "STORED\r\n"
     else
       "NOT_STORED\r\n"
