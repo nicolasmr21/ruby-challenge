@@ -88,6 +88,26 @@ class Server
     end
   end
 
+  def append(key, bytes, data)
+    item = @storage[key]
+    if !item.nil?
+      @storage[key] = [item[0] + data, item[1], item[2], item[3] + bytes, 0]
+      "STORED\r\n"
+    else
+      "NOT_FOUND\r\n"
+    end
+  end
+
+  def prepend(key, bytes, data)
+    item = @storage[key]
+    if !item.nil?
+      @storage[key] = [data + item[0], item[1], item[2], item[3] + bytes, 0]
+      "STORED\r\n"
+    else
+      "NOT_FOUND\r\n"
+    end
+  end
+
 end
 
 server = Server.new(3000)
