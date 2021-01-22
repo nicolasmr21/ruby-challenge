@@ -1,6 +1,7 @@
 require './persistence_unit'
 
 class MemcachedManager
+
   def initialize
     @storage = PersistenceUnit.new
   end
@@ -74,9 +75,9 @@ class MemcachedManager
   end
 
   def prepend(key, bytes, data)
-    item = @storage[key]
+    item = @storage.get(key)
     if !item.nil?
-      @storage.set(key, [data + item[0] , item[1], item[2], item[3] + bytes, 0])
+      @storage.set(key, [data + item[0], item[1], item[2], item[3] + bytes, 0])
       "STORED\r\n"
     else
       "NOT_STORED\r\n"
