@@ -1,6 +1,7 @@
 require 'socket'
 
 class Server
+
   def initialize(port)
     @storage = { '2' => ['database', 15, 4000, 8, 0], '3' => ['databasx', 11, 6000, 8, 0] }
     @server = TCPServer.new(port)
@@ -75,6 +76,16 @@ class Server
       "NOT_STORED\r\n"
     end
   end
+
+  def replace(key, flags, exptime, bytes, data)
+    if !@storage[key].nil?
+      @storage[key] = [data, flags, exptime, bytes, 0]
+      "STORED\r\n"
+    else
+      "NOT_STORED\r\n"
+    end
+  end
+
 end
 
 server = Server.new(3000)

@@ -1,6 +1,7 @@
 require 'socket'
 
 class Client
+
   def initialize(host, port)
     @host = host
     @port = port
@@ -21,6 +22,7 @@ class Client
     response = socket.read
     puts response
   end
+
 end
 
 client = Client.new('localhost', 3000)
