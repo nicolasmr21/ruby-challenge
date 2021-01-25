@@ -1,7 +1,7 @@
 class PersistenceUnit
 
   def initialize
-    @storage = { '2' => ['database', 15, 5000, 8, 0, Time.now] }
+    @storage = {} # "KEY" = ["DATA", "FLAGS", "EXPIRATION TIME", "BYTES", "CAS KEY", "MODIFICATION DATE"]
   end
 
   def get(key)
