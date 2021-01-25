@@ -22,6 +22,8 @@ class MemcachedManager
       append(commands[0], commands[3].to_i, data)
     when 'PREPEND'
       prepend(commands[0], commands[3].to_i, data)
+    when 'CAS'
+      cas(commands[0], commands[1].to_i, commands[2].to_i, commands[3].to_i, commands[4].to_i, data)
     else
       "ERROR\r\n"
     end
@@ -37,7 +39,7 @@ class MemcachedManager
       !key.nil? && (!flags.nil? && flags.to_i) && (!exptime.nil? && exptime.to_i) && (!bytes.nil? && bytes.to_i)
     elsif action == 'CAS'
       key, flags, exptime, bytes, cas = commands
-      !key.nil? && (!flags.nil? && flags.to_i) && (!exptime.nil? && exptime.to_i) && (!cas.nil?)
+      !key.nil? && (!flags.nil? && flags.to_i) && (!exptime.nil? && exptime.to_i) && !cas.nil?
     else
       false
     end
@@ -53,7 +55,7 @@ class MemcachedManager
   end
 
   def gets(keys)
-    if(@storage.exist_keys(keys))
+    if @storage.exist_keys(keys)
       response = ''
       keys.each do |key|
         item = @storage.get(key)
@@ -105,6 +107,15 @@ class MemcachedManager
       "STORED\r\n"
     else
       "NOT_STORED\r\n"
+    end
+  end
+
+  def cas(key, flags, exptime, bytes, cas, data)
+    if @storage.exist_key(key)
+      @storage.set(key, [data[0...bytes], flags, exptime, bytes, cas, Time.now])
+      "STORED\r\n"
+    else
+      "NOT_FOUND\r\n"
     end
   end
 end
