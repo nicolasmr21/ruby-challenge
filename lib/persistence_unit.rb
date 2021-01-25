@@ -12,8 +12,16 @@ class PersistenceUnit
     @storage[key] = value
   end
 
-  def exist(key)
+  def exist_key(key)
     !@storage[key].nil?
+  end
+
+  def exist_keys(keys)
+    keys.each do |key|
+      next unless @storage[key].nil?
+      return false
+    end
+    true
   end
 
 end

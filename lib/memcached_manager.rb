@@ -27,18 +27,42 @@ class MemcachedManager
     end
   end
 
+  def validate_request(action, commands, data)
+    if %w[GET GETS].include? action
+      has_keys = !commands.empty?
+      valid_size = action == 'GET' ? commands.size == 1 : commands.size >= 1
+      has_keys && valid_size
+    elsif %w[SET ADD REPLACE APPEND PREPEND].include? action
+      key, flags, exptime, bytes = commands
+      !key.nil? && (!flags.nil? && flags.to_i) && (!exptime.nil? && exptime.to_i) && (!bytes.nil? && bytes.to_i)
+    elsif action == 'CAS'
+      key, flags, exptime, bytes, cas = commands
+      !key.nil? && (!flags.nil? && flags.to_i) && (!exptime.nil? && exptime.to_i) && (!cas.nil?)
+    else
+      false
+    end
+  end
+
   def get(key)
-    item = @storage.get(key)
-    "VALUE #{key} #{item[1]} #{item[2]} #{item[3]} #{item[4]}\r\n#{item[0]}\r\nEND\r\n"
+    if @storage.exist_key(key)
+      item = @storage.get(key)
+      "VALUE #{key} #{item[1]} #{item[2]} #{item[3]} #{item[4]}\r\n#{item[0]}\r\nEND\r\n"
+    else
+      'CLIENT_ERROR KEY DOES NOT EXIST'
+    end
   end
 
   def gets(keys)
-    response = ''
-    keys.each do |key|
-      item = @storage.get(key)
-      response += "VALUE #{key} #{item[1]} #{item[2]} #{item[3]} #{item[4]}\r\n#{item[0]}\r\n"
+    if(@storage.exist_keys(keys))
+      response = ''
+      keys.each do |key|
+        item = @storage.get(key)
+        response += "VALUE #{key} #{item[1]} #{item[2]} #{item[3]} #{item[4]}\r\n#{item[0]}\r\n"
+      end
+      response += "END\r\n"
+    else
+      'CLIENT_ERROR ONE OF THE SPECIFIED KEYS DOES NOT EXIST'
     end
-    response += "END\r\n"
   end
 
   def set(key, flags, exptime, bytes, data)
@@ -47,7 +71,7 @@ class MemcachedManager
   end
 
   def add(key, flags, exptime, bytes, data)
-    if !@storage.exist(key)
+    if !@storage.exist_key(key)
       @storage.set(key, [data[0...bytes], flags, exptime, bytes, 0, Time.now])
       "STORED\r\n"
     else
@@ -56,7 +80,7 @@ class MemcachedManager
   end
 
   def replace(key, flags, exptime, bytes, data)
-    if @storage.exist(key)
+    if @storage.exist_key(key)
       @storage.set(key, [data[0...bytes], flags, exptime, bytes, 0, Time.now])
       "STORED\r\n"
     else

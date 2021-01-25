@@ -42,8 +42,12 @@ class Server
   def process(request)
     commands, data = format_request(request)
     action = commands.shift.upcase
-    puts "PROCESS #{action} AT #{Time.now}"
-    @manager.process(action, commands, data)
+    if @manager.validate_request(action, commands, data)
+      puts "PROCESS #{action} AT #{Time.now}"
+      @manager.process(action, commands, data)
+    else
+      "CLIENT_ERROR THE INPUT DOES NOT CONFORM THE PROTOCOL\r\n"
+    end
   end
 
   def format_request(request)
