@@ -4,7 +4,6 @@ require './memcached_manager'
 class Server
 
   def initialize(port)
-    @storage = { '2' => ['database', 15, 4000, 8, 0] }
     @server = TCPServer.new(port)
     @descriptors = [@server]
     @manager = MemcachedManager.new

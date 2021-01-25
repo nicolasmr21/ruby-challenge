@@ -23,7 +23,7 @@ class MemcachedManager
     when 'PREPEND'
       prepend(commands[0], commands[3].to_i, data)
     when 'CAS'
-      cas(commands[0], commands[1].to_i, commands[2].to_i, commands[3].to_i, commands[4].to_i, data)
+      cas(commands[0], commands[1].to_i, commands[2].to_i, commands[3].to_i, commands[4], data)
     else
       "ERROR\r\n"
     end
@@ -111,9 +111,14 @@ class MemcachedManager
   end
 
   def cas(key, flags, exptime, bytes, cas, data)
-    if @storage.exist_key(key)
-      @storage.set(key, [data[0...bytes], flags, exptime, bytes, cas, Time.now])
-      "STORED\r\n"
+    item = @storage.get(key)
+    if !item.nil?
+      if cas == item[4]
+        @storage.set(key, [data[0...bytes], flags, exptime, bytes, cas, Time.now])
+        "STORED\r\n"
+      else
+        "EXISTS \r\n"
+      end
     else
       "NOT_FOUND\r\n"
     end
