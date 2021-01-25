@@ -13,15 +13,15 @@ class MemcachedManager
     when 'GETS'
       gets(commands)
     when 'SET'
-      set(commands[0], commands[1], commands[2], commands[3], data)
+      set(commands[0], commands[1].to_i, commands[2].to_i, commands[3].to_i, data)
     when 'ADD'
-      add(commands[0], commands[1], commands[2], commands[3], data)
+      add(commands[0], commands[1].to_i, commands[2].to_i, commands[3].to_i, data)
     when 'REPLACE'
-      replace(commands[0], commands[1], commands[2], commands[3], data)
+      replace(commands[0], commands[1].to_i, commands[2].to_i, commands[3].to_i, data)
     when 'APPEND'
-      append(commands[0], commands[3], data)
+      append(commands[0], commands[3].to_i, data)
     when 'PREPEND'
-      prepend(commands[0], commands[3], data)
+      prepend(commands[0], commands[3].to_i, data)
     else
       "ERROR\r\n"
     end
@@ -42,13 +42,13 @@ class MemcachedManager
   end
 
   def set(key, flags, exptime, bytes, data)
-    @storage.set(key, [data, flags, exptime, bytes, 0])
+    @storage.set(key, [data[0...bytes], flags, exptime, bytes, 0, Time.now])
     "STORED\r\n"
   end
 
   def add(key, flags, exptime, bytes, data)
     if !@storage.exist(key)
-      @storage.set(key, [data, flags, exptime, bytes, 0])
+      @storage.set(key, [data[0...bytes], flags, exptime, bytes, 0, Time.now])
       "STORED\r\n"
     else
       "NOT_STORED\r\n"
@@ -57,7 +57,7 @@ class MemcachedManager
 
   def replace(key, flags, exptime, bytes, data)
     if @storage.exist(key)
-      @storage.set(key, [data, flags, exptime, bytes, 0])
+      @storage.set(key, [data[0...bytes], flags, exptime, bytes, 0, Time.now])
       "STORED\r\n"
     else
       "NOT_STORED\r\n"
@@ -67,7 +67,7 @@ class MemcachedManager
   def append(key, bytes, data)
     item = @storage.get(key)
     if !item.nil?
-      @storage.set(key, [item[0] + data, item[1], item[2], item[3] + bytes, 0])
+      @storage.set(key, [item[0] + data[0...bytes], item[1], item[2], item[3] + bytes, item[4], item[5]])
       "STORED\r\n"
     else
       "NOT_STORED\r\n"
@@ -77,7 +77,7 @@ class MemcachedManager
   def prepend(key, bytes, data)
     item = @storage.get(key)
     if !item.nil?
-      @storage.set(key, [data + item[0], item[1], item[2], item[3] + bytes, 0])
+      @storage.set(key, [data[0...bytes] + item[0], item[1], item[2], item[3] + bytes, item[4], item[5]])
       "STORED\r\n"
     else
       "NOT_STORED\r\n"
