@@ -115,8 +115,7 @@ class MemcachedManager
     item = @storage.get(key)
     if !item.nil?
       if cas == item[4]
-        @storage.set(key, [data[0...bytes], flags, exptime, bytes, cas, Time.now])
-        "STORED\r\n"
+        set(key, flags, exptime, bytes, data)
       else
         "EXISTS \r\n"
       end
