@@ -68,13 +68,13 @@ class MemcachedManager
   end
 
   def set(key, flags, exptime, bytes, data)
-    @storage.set(key, [data[0...bytes], flags, exptime, bytes, 0, Time.now])
+    @storage.set(key, [data[0...bytes], flags, exptime, bytes, SecureRandom.hex(16), Time.now])
     "STORED\r\n"
   end
 
   def add(key, flags, exptime, bytes, data)
     if !@storage.exist_key(key)
-      @storage.set(key, [data[0...bytes], flags, exptime, bytes, 0, Time.now])
+      @storage.set(key, [data[0...bytes], flags, exptime, bytes, SecureRandom.hex(16), Time.now])
       "STORED\r\n"
     else
       "NOT_STORED\r\n"
@@ -83,7 +83,7 @@ class MemcachedManager
 
   def replace(key, flags, exptime, bytes, data)
     if @storage.exist_key(key)
-      @storage.set(key, [data[0...bytes], flags, exptime, bytes, 0, Time.now])
+      @storage.set(key, [data[0...bytes], flags, exptime, bytes, SecureRandom.hex(16), Time.now])
       "STORED\r\n"
     else
       "NOT_STORED\r\n"
