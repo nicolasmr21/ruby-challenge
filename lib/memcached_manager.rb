@@ -1,4 +1,5 @@
 require './persistence_unit'
+require 'securerandom'
 
 class MemcachedManager
 
