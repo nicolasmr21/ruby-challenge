@@ -33,8 +33,14 @@ class PersistenceUnit
   end
 
   def purge_keys
-    @storage.each do |key, array|
-      exptime = array[2]
+    @storage.each do |key, value|
+      exptime = value[2]
+      modification_date = value[5]
+      diff = Time.now.to_f - modification_date.to_f
+      if diff > exptime
+        puts "delete #{key}"
+        @storage.delete(key)
+      end
     end
   end
 
