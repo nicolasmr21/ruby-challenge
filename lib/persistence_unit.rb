@@ -1,25 +1,34 @@
+# This class represents the persistence unit to be used
+# to store the data.
 class PersistenceUnit
 
+  # When instantiating an object of this class, a hash unit is
+  # created to store key-value elements.
+  # It is also called the method that purges the keys.
   def initialize
-    @storage = {
-      '1' => ['xxx', 1, 5, 3, 1, Time.now],
-      '2' => ['xxx', 1, 10, 3, 1, Time.now]
-    } # "KEY" = ["DATA", "FLAGS", "EXPIRATION TIME", "BYTES", "CAS KEY", "MODIFICATION DATE"]
-    start_purge_thread
+    @storage = {} # "KEY" = ["DATA", "FLAGS", "EXPIRATION TIME", "BYTES", "CAS KEY", "MODIFICATION DATE"]
+    start_purge_thread(5)
   end
 
+  # This method allows to obtain the value associated to a key.
   def get(key)
     @storage[key]
   end
 
+  # This method allows to set the value associated with a key
   def set(key, value)
     @storage[key] = value
   end
 
+  # This method allows to know if the hash structure contains
+  # a specific key.
   def exist_key(key)
     !@storage[key].nil?
   end
 
+  # This method allows to know if the hash structure contains
+  # a set of keys.
+  # If any of the specified keys does not exist, it will return false.
   def exist_keys(keys)
     keys.each do |key|
       next unless @storage[key].nil?
@@ -28,15 +37,19 @@ class PersistenceUnit
     true
   end
 
-  def start_purge_thread
+  # This method allows to create a thread that every x
+  # seconds will activate the function to purge the keys.
+  def start_purge_thread(seconds)
     Thread.new do
       loop do
-        sleep(5)
+        sleep(seconds)
         purge_keys
       end
     end
   end
 
+  # This method allows to remove from the hash structure
+  # the key-value elements that have already expired.
   def purge_keys
     @storage.each do |key, value|
       exptime = value[2]
@@ -48,5 +61,4 @@ class PersistenceUnit
       end
     end
   end
-
 end
