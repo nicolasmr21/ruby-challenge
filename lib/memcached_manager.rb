@@ -133,7 +133,7 @@ class MemcachedManager
     end
   end
 
-  # CAS command is used to set the data if it is not updated since last fetch.
+  # cas command is used to set the data if it is not updated since last fetch.
   # If the key does not exist in Memcached, then it returns NOT_FOUND.
   def cas(key, flags, exptime, bytes, cas, data)
     item = @storage.get(key)
