@@ -26,17 +26,6 @@ class PersistenceUnit
     !@storage[key].nil?
   end
 
-  # This method allows to know if the hash structure contains
-  # a set of keys.
-  # If any of the specified keys does not exist, it will return false.
-  def exist_keys(keys)
-    keys.each do |key|
-      next unless @storage[key].nil?
-      return false
-    end
-    true
-  end
-
   # This method allows to create a thread that every x
   # seconds will activate the function to purge the keys.
   def start_purge_thread(seconds)
