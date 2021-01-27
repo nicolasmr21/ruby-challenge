@@ -1,12 +1,19 @@
 require './persistence_unit'
 require 'securerandom'
 
+# This class represents the memcached manager that is in
+# charge of processing the commands that arrive as
+# requests to the server.
 class MemcachedManager
 
+  # When an object of this class is instantiated, an instance of
+  # the persistence unit is created in order to store the data.
   def initialize
     @storage = PersistenceUnit.new
   end
 
+  # This method allows to find the associated logic specific to
+  # each action.
   def process(action, commands, data)
     case action
     when 'GET'
@@ -30,6 +37,8 @@ class MemcachedManager
     end
   end
 
+  # This method allows to validate that the structure of each
+  # command complies with the memcached protocol.
   def validate_request(action, commands, data)
     if %w[GET GETS].include? action
       has_keys = !commands.empty?
@@ -46,33 +55,40 @@ class MemcachedManager
     end
   end
 
+  # get method is used to get the value stored at key.
+  # If the key does not exist in Memcached, then it returns nothing.
   def get(key)
     if @storage.exist_key(key)
       item = @storage.get(key)
       "VALUE #{key} #{item[1]} #{item[2]} #{item[3]} #{item[4]}\r\n#{item[0]}\r\nEND\r\n"
     else
-      'CLIENT_ERROR KEY DOES NOT EXIST'
+      "\r\nEND\r\n"
     end
   end
 
+  # gets method is used to get the values stored at a set of keys.
+  # If a key does not exist in Memcached, then the value of this key returns nothing.
   def gets(keys)
-    if @storage.exist_keys(keys)
-      response = ''
-      keys.each do |key|
+    response = ''
+    keys.each do |key|
+      if @storage.exist_key(key)
         item = @storage.get(key)
         response += "VALUE #{key} #{item[1]} #{item[2]} #{item[3]} #{item[4]}\r\n#{item[0]}\r\n"
+      else
+        response += "\r\n"
       end
-      response += "END\r\n"
-    else
-      'CLIENT_ERROR ONE OF THE SPECIFIED KEYS DOES NOT EXIST'
     end
+    response += "END\r\n"
   end
 
+  # set method is used to set a new value to a new or existing key.
   def set(key, flags, exptime, bytes, data)
     @storage.set(key, [data[0...bytes], flags, exptime, bytes, SecureRandom.hex(16), Time.now])
     "STORED\r\n"
   end
 
+  # add method is used to set a value to a new key.
+  # If the key already exists, then it gives the output NOT_STORED.
   def add(key, flags, exptime, bytes, data)
     if !@storage.exist_key(key)
       @storage.set(key, [data[0...bytes], flags, exptime, bytes, SecureRandom.hex(16), Time.now])
@@ -82,6 +98,8 @@ class MemcachedManager
     end
   end
 
+  # replace method is used to replace the value of an existing key.
+  # If the key does not exist, then it gives the output NOT_STORED.
   def replace(key, flags, exptime, bytes, data)
     if @storage.exist_key(key)
       @storage.set(key, [data[0...bytes], flags, exptime, bytes, SecureRandom.hex(16), Time.now])
@@ -91,6 +109,8 @@ class MemcachedManager
     end
   end
 
+  # append method is used to add some data in an existing key.
+  # The data is stored after the existing data of the key.
   def append(key, bytes, data)
     item = @storage.get(key)
     if !item.nil?
@@ -101,6 +121,8 @@ class MemcachedManager
     end
   end
 
+  # prepend command is used to add some data in an existing key.
+  # The data is stored before the existing data of the key.
   def prepend(key, bytes, data)
     item = @storage.get(key)
     if !item.nil?
@@ -111,6 +133,8 @@ class MemcachedManager
     end
   end
 
+  # CAS command is used to set the data if it is not updated since last fetch.
+  # If the key does not exist in Memcached, then it returns NOT_FOUND.
   def cas(key, flags, exptime, bytes, cas, data)
     item = @storage.get(key)
     if !item.nil?
