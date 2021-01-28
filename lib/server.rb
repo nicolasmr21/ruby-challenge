@@ -65,7 +65,7 @@ class Server
 
   def shutdown(client)
     client.close
-    @clients[client][1].terminate
+    @clients[client].terminate
   end
 end
 
