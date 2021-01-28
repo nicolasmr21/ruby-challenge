@@ -1,4 +1,4 @@
-require './persistence_unit'
+require_relative './persistence_unit'
 require 'securerandom'
 
 # This class represents the memcached manager that is in

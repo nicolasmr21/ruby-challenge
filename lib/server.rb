@@ -1,24 +1,37 @@
 require 'socket'
-require './memcached_manager'
+require_relative './memcached_manager'
 
+# This class represents the memcached server that will be in
+# charge of managing client connections, validating and
+# responding to requests.
 class Server
 
+  # Instantiating objects of this class will initialize the port, the
+  # memcached manager and a hash structure to store
+  # information about the clients.
   def initialize(port)
     @port = port
     @manager = MemcachedManager.new
     @clients = {}
   end
 
+  # This method allows you to activate the functions in charge
+  # of initializing the server and start accepting clients.
   def start
     run_server
     accept_clients
   end
 
+  # This method allows to instantiate the server
+  # using the TCPServer class provided by the core.
   def run_server
     @server = TCPServer.new(@port)
     puts "SERVER LISTENING ON PORT: #{@port}"
   end
 
+  # This method allows accepting new connections and
+  # creating a thread for each of them in order to support
+  # multiple clients at the same time.
   def accept_clients
     loop do
       Thread.start(@server.accept) do |client|
@@ -32,6 +45,7 @@ class Server
     end
   end
 
+  #
   def handle_client(client)
     loop do
       request = client.read
@@ -44,6 +58,7 @@ class Server
     end
   end
 
+  #
   def process(request)
     commands, data = format_request(request)
     action = commands.shift.upcase
@@ -55,11 +70,14 @@ class Server
     end
   end
 
+  #
   def format_request(request)
     lines = request.split("\n")
     [lines[0].split, lines[1]]
   end
 
+  # This method allows to close the connection with a client
+  # and also to free the resources of a thread by terminating it.
   def shutdown(client)
     client.close
     @clients[client].terminate
