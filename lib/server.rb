@@ -22,12 +22,10 @@ class Server
   def accept_clients
     loop do
       Thread.start(@server.accept) do |client|
-        puts "CONNECTED TO #{client}"
         @clients[client] = Thread.current
         begin
           handle_client(client)
         rescue StandardError => e
-          puts "CLOSING CONNECTION TO #{client}"
           shutdown(client)
         end
       end
@@ -47,7 +45,6 @@ class Server
   end
 
   def process(request)
-    puts request
     commands, data = format_request(request)
     action = commands.shift.upcase
     if @manager.validate_request(action, commands, data)

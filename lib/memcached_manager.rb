@@ -62,7 +62,7 @@ class MemcachedManager
       item = @storage.get(key)
       "VALUE #{key} #{item[1]} #{item[2]} #{item[3]} #{item[4]}\r\n#{item[0]}\r\nEND\r\n"
     else
-      "\r\nEND\r\n"
+      "END\r\n"
     end
   end
 
@@ -74,8 +74,6 @@ class MemcachedManager
       if @storage.exist_key(key)
         item = @storage.get(key)
         response += "VALUE #{key} #{item[1]} #{item[2]} #{item[3]} #{item[4]}\r\n#{item[0]}\r\n"
-      else
-        response += "\r\n"
       end
     end
     response += "END\r\n"
