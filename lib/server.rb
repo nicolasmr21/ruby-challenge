@@ -88,6 +88,3 @@ class Server
     @clients[client].terminate
   end
 end
-
-server = Server.new(3000)
-server.start

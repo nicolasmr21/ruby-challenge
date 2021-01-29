@@ -32,6 +32,3 @@ class Client
     puts socket.read
   end
 end
-
-client = Client.new('localhost', 3000)
-client.start
