@@ -1,4 +1,4 @@
-require '../lib/server'
+require_relative '../lib/memcached_manager'
 
-describe Server do
+describe MemcachedManager do
 end
