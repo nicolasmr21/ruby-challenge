@@ -7,7 +7,7 @@ class PersistenceUnit
   # It is also called the method that purges the keys.
   def initialize
     @storage = {} # "KEY" = ["DATA", "FLAGS", "EXPIRATION TIME", "BYTES", "CAS KEY", "MODIFICATION DATE"]
-    start_purge_thread(5)
+    start_purge_thread(1)
   end
 
   # This method allows to obtain the value associated to a key.
