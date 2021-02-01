@@ -60,7 +60,7 @@ class Server
     end
   end
 
-  # This method allows you to validate and process a
+  # This method allows to validate and process a
   # request using the services offered by the memcached manager.
   def process(request)
     commands, data = format_request(request)
@@ -73,7 +73,7 @@ class Server
     end
   end
 
-  # This method allows you to format a request
+  # This method allows to format a request
   # in order to separate the command and the data in a
   # form that the memcached administrator can handle.
   def format_request(request)
