@@ -46,11 +46,12 @@ class MemcachedManager
       has_keys && valid_size
     elsif %w[SET ADD REPLACE APPEND PREPEND].include? action
       key, flags, exptime, bytes = commands
-      puts(key, flags, exptime, bytes)
-      !key.nil? && !data.nil? && (!flags.nil? && flags.to_i) && (!exptime.nil? && exptime.to_i) && (!bytes.nil? && bytes.to_i)
+      !key.nil? && !data.nil? && (!flags.nil? && flags.to_i) && (!exptime.nil? && exptime.to_i) &&
+        (!bytes.nil? && bytes.to_i) && commands.size == 4
     elsif action == 'CAS'
       key, flags, exptime, bytes, cas = commands
-      !key.nil? && !data.nil? && (!flags.nil? && flags.to_i) && (!exptime.nil? && exptime.to_i) && !cas.nil?
+      !key.nil? && !data.nil? && (!flags.nil? && flags.to_i) && (!exptime.nil? && exptime.to_i) &&
+        (!bytes.nil? && bytes.to_i) && !cas.nil? && commands.size == 5
     else
       false
     end

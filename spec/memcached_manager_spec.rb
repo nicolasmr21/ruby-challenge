@@ -16,7 +16,15 @@ describe MemcachedManager do
       expect(manager.validate_request('CAS', %w[1 23 5000 7 c0ceb73], 'newdata')).to be_truthy
     end
     it 'should return false if is not valid' do
-
+      expect(manager.validate_request('GET', '', nil)).to be_falsey
+      expect(manager.validate_request('GET', %w[1 2], nil)).to be_falsey
+      expect(manager.validate_request('GETS', '', nil)).to be_falsey
+      expect(manager.validate_request('SET', %w[1 23 5000], 'newdata')).to be_falsey
+      expect(manager.validate_request('ADD', %w[1 5000], 'newdata')).to be_falsey
+      expect(manager.validate_request('REPLACE', %w[1], 'newdata')).to be_falsey
+      expect(manager.validate_request('APPEND', '', 'newdata')).to be_falsey
+      expect(manager.validate_request('PREPEND', %w[1 23 5000 7 25], 'newdata')).to be_falsey
+      expect(manager.validate_request('CAS', %w[1 23 5000 c0ceb73], 'newdata')).to be_falsey
     end
   end
 
