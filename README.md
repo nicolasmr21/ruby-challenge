@@ -5,7 +5,7 @@
 To start a memcached server, you must be located in the root folder of the project, open the command line from that folder and type
 
 <pre>
-run_server.rb
+ruby run_server.rb
 </pre>
 
 Make sure you have the latest version of ruby installed.
@@ -15,7 +15,7 @@ Make sure you have the latest version of ruby installed.
 Likewise, to start a memcached client, you must open the console located in the root folder and type
 
 <pre>
-run_client.rb
+ruby run_client.rb
 </pre>
 
 By default the server listens on port 3000 and clients connect on this same port by referring to localhost. If you want to change configuration it is possible to modify the parameters in the scripts.
