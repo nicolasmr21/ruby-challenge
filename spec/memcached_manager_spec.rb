@@ -107,11 +107,29 @@ describe MemcachedManager do
   end
 
   describe '#append' do
-
+    it 'should append data on item if it exists' do
+      expect(manager.get('2')).to be_an_include('VALUE')
+      expect(manager.append('2', 6, 'append')).to be_an_include('STORED')
+      expect(manager.get('2')).to be_an_include('VALUE 2 10 3000 19')
+      expect(manager.get('2')).to be_an_include('test object yappend')
+    end
+    it 'should not append if a item does not exist' do
+      expect(manager.get('3')).to_not be_an_include('VALUE')
+      expect(manager.append('3', 2, 'xy')).to be_an_include('NOT_STORED')
+    end
   end
 
   describe '#prepend' do
-
+    it 'should prepend data on item if it exists' do
+      expect(manager.get('2')).to be_an_include('VALUE')
+      expect(manager.prepend('2', 7, 'prepend')).to be_an_include('STORED')
+      expect(manager.get('2')).to be_an_include('VALUE 2 10 3000 20')
+      expect(manager.get('2')).to be_an_include('prependtest object y')
+    end
+    it 'should not prepend if a item does not exist' do
+      expect(manager.get('3')).to_not be_an_include('VALUE')
+      expect(manager.prepend('3', 2, 'xy')).to be_an_include('NOT_STORED')
+    end
   end
 
   describe '#cas' do
