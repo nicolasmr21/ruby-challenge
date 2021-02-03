@@ -15,6 +15,7 @@ class Client
   # This method allows to obtain the user entries that will be
   # used to make requests to the server.
   def start
+    puts 'MEMCACHED CLIENT STARTED, TYPE YOUR COMMAND'
     loop do
       command = gets.chomp
       data = gets.chomp unless command.include? 'get'

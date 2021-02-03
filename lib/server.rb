@@ -26,7 +26,7 @@ class Server
   # using the TCPServer class provided by the core.
   def run_server
     @server = TCPServer.new(@port)
-    puts "SERVER LISTENING ON PORT: #{@port}"
+    puts "MEMCACHED SERVER LISTENING ON PORT: #{@port}"
   end
 
   # This method allows accepting new connections and

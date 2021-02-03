@@ -32,6 +32,7 @@ describe MemcachedManager do
       expect(manager.validate_request('CAS', '', 'newdata')).to be_falsey
       expect(manager.validate_request('CAS', '', '')).to be_falsey
       expect(manager.validate_request('PUT', nil, nil)).to be_falsey
+      expect(manager.validate_request('', nil, nil)).to be_falsey
     end
   end
 
