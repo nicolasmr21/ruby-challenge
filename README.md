@@ -18,6 +18,8 @@ Likewise, to start a memcached client, you must open the console located in the 
 run_client.rb
 </pre>
 
+By default the server listens on port 3000 and clients connect on this same port by referring to localhost. If you want to change configuration it is possible to modify the parameters in the scripts.
+
 ### COMMANDS
 
 Once a client has been started, a message like the following should appear: MEMCACHED CLIENT STARTED, TYPE YOUR COMMAND. After that you can start typing some commands. The following are examples of them
