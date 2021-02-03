@@ -133,6 +133,21 @@ describe MemcachedManager do
   end
 
   describe '#cas' do
-
+    it 'should update data of item if it exists and the cas key is the same' do
+      item = manager.get('2').split('\n')[0];
+      cas = item.split[5]
+      expect(cas).to_not be_nil
+      expect(manager.cas('2', 2, 5000, 2, cas, 'xy')).to be_an_include('STORED')
+      expect(manager.get('2')).to be_an_include('VALUE 2 2 5000 2')
+      expect(manager.get('2')).to be_an_include('xy')
+    end
+    it 'should not update data of item if it exists and the cas key is not the same' do
+      expect(manager.get('2')).to be_an_include('VALUE')
+      expect(manager.cas('2', 2, 5000, 2, 'c0ceb73bd', 'xy')).to be_an_include('EXISTS')
+    end
+    it 'should not update data of item if it does not exists' do
+      expect(manager.get('3')).to_not be_an_include('VALUE')
+      expect(manager.cas('3', 2, 5000, 2, 'c0ceb73bd', 'xy')).to be_an_include('NOT_FOUND')
+    end
   end
 end
