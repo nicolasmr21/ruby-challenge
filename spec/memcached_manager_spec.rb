@@ -82,7 +82,15 @@ describe MemcachedManager do
   end
 
   describe '#add' do
-
+    it 'should add a new item if it does not exist' do
+      expect(manager.get('3')).to_not be_an_include('VALUE')
+      expect(manager.add('3', 10, 50, 2, 'xy')).to be_an_include('STORED')
+      expect(manager.get('3')).to be_an_include('VALUE')
+    end
+    it 'should not add if a item exist' do
+      expect(manager.get('2')).to be_an_include('VALUE')
+      expect(manager.add('2', 10, 50, 2, 'xy')).to be_an_include('NOT_STORED')
+    end
   end
 
   describe '#replace' do
