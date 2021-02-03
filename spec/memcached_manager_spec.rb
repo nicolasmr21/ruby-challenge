@@ -94,7 +94,16 @@ describe MemcachedManager do
   end
 
   describe '#replace' do
-
+    it 'should replace a item if it exists' do
+      expect(manager.get('2')).to be_an_include('VALUE')
+      expect(manager.replace('2', 11, 50, 2, 'xy')).to be_an_include('STORED')
+      expect(manager.get('2')).to be_an_include('VALUE 2 11 50 2')
+      expect(manager.get('2')).to be_an_include('xy')
+    end
+    it 'should not replace if a item does not exist' do
+      expect(manager.get('3')).to_not be_an_include('VALUE')
+      expect(manager.replace('3', 10, 50, 2, 'xy')).to be_an_include('NOT_STORED')
+    end
   end
 
   describe '#append' do
