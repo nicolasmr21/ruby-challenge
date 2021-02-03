@@ -83,9 +83,9 @@ describe MemcachedManager do
 
   describe '#add' do
     it 'should add a new item if it does not exist' do
-      expect(manager.get('3')).to_not be_an_include('VALUE')
-      expect(manager.add('3', 10, 50, 2, 'xy')).to be_an_include('STORED')
-      expect(manager.get('3')).to be_an_include('VALUE')
+      expect(manager.get('4')).to_not be_an_include('VALUE')
+      expect(manager.add('4', 10, 50, 2, 'xy')).to be_an_include('STORED')
+      expect(manager.get('4')).to be_an_include('VALUE')
     end
     it 'should not add if a item exist' do
       expect(manager.get('2')).to be_an_include('VALUE')
@@ -101,34 +101,36 @@ describe MemcachedManager do
       expect(manager.get('2')).to be_an_include('xy')
     end
     it 'should not replace if a item does not exist' do
-      expect(manager.get('3')).to_not be_an_include('VALUE')
-      expect(manager.replace('3', 10, 50, 2, 'xy')).to be_an_include('NOT_STORED')
+      expect(manager.get('5')).to_not be_an_include('VALUE')
+      expect(manager.replace('5', 10, 50, 2, 'xy')).to be_an_include('NOT_STORED')
     end
   end
 
   describe '#append' do
     it 'should append data on item if it exists' do
+      manager.set('2', 10, 3000, 13, 'test object y')
       expect(manager.get('2')).to be_an_include('VALUE')
       expect(manager.append('2', 6, 'append')).to be_an_include('STORED')
       expect(manager.get('2')).to be_an_include('VALUE 2 10 3000 19')
       expect(manager.get('2')).to be_an_include('test object yappend')
     end
     it 'should not append if a item does not exist' do
-      expect(manager.get('3')).to_not be_an_include('VALUE')
-      expect(manager.append('3', 2, 'xy')).to be_an_include('NOT_STORED')
+      expect(manager.get('6')).to_not be_an_include('VALUE')
+      expect(manager.append('6', 2, 'xy')).to be_an_include('NOT_STORED')
     end
   end
 
   describe '#prepend' do
     it 'should prepend data on item if it exists' do
+      manager.set('2', 10, 3000, 13, 'test object y')
       expect(manager.get('2')).to be_an_include('VALUE')
       expect(manager.prepend('2', 7, 'prepend')).to be_an_include('STORED')
       expect(manager.get('2')).to be_an_include('VALUE 2 10 3000 20')
       expect(manager.get('2')).to be_an_include('prependtest object y')
     end
     it 'should not prepend if a item does not exist' do
-      expect(manager.get('3')).to_not be_an_include('VALUE')
-      expect(manager.prepend('3', 2, 'xy')).to be_an_include('NOT_STORED')
+      expect(manager.get('6')).to_not be_an_include('VALUE')
+      expect(manager.prepend('6', 2, 'xy')).to be_an_include('NOT_STORED')
     end
   end
 
@@ -146,8 +148,8 @@ describe MemcachedManager do
       expect(manager.cas('2', 2, 5000, 2, 'c0ceb73bd', 'xy')).to be_an_include('EXISTS')
     end
     it 'should not update data of item if it does not exists' do
-      expect(manager.get('3')).to_not be_an_include('VALUE')
-      expect(manager.cas('3', 2, 5000, 2, 'c0ceb73bd', 'xy')).to be_an_include('NOT_FOUND')
+      expect(manager.get('10')).to_not be_an_include('VALUE')
+      expect(manager.cas('10', 2, 5000, 2, 'c0ceb73bd', 'xy')).to be_an_include('NOT_FOUND')
     end
   end
 end
