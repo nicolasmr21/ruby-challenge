@@ -35,6 +35,7 @@ class Server
   def accept_clients
     loop do
       Thread.start(@server.accept) do |client|
+        puts "CONNECTED TO #{client}"
         @clients[client] = Thread.current
         begin
           handle_client(client)
@@ -50,21 +51,19 @@ class Server
   # write a response.
   def handle_client(client)
     loop do
-      request = client.read
-      if request
-        response = process(request)
-        client.write(response)
-      else
-        shutdown(client)
-      end
+      request = client.gets
+      next unless request
+      response = process(request, client)
+      client.write(response)
     end
   end
 
   # This method allows to validate and process a
   # request using the services offered by the memcached manager.
-  def process(request)
-    commands, data = format_request(request)
+  def process(request, client)
+    commands = request.split
     action = commands.shift.upcase
+    data = client.gets unless request.include? 'get'
     if @manager.validate_request(action, commands, data)
       puts "PROCESS #{action} AT #{Time.now}"
       @manager.process(action, commands, data)
@@ -73,18 +72,11 @@ class Server
     end
   end
 
-  # This method allows to format a request
-  # in order to separate the command and the data in a
-  # form that the memcached administrator can handle.
-  def format_request(request)
-    lines = request.split("\n")
-    [lines[0].split, lines[1]]
-  end
-
   # This method allows to close the connection with a client
   # and also to free the resources of a thread by terminating it.
   def shutdown(client)
     client.close
+    puts "SHUTDOWN #{client}"
     @clients[client].terminate
   end
 end
