@@ -52,16 +52,17 @@ describe PersistenceUnit do
     storage.set('1', itemx)
     storage.set('2', itemy)
     it 'should remove expired keys' do
-      expect(storage.exist_key('1')).to be_truthy
+      expect(storage.key_is_expired('1')).to be_falsey
       sleep(3)
+      expect(storage.key_is_expired('1')).to be_truthy
+      storage.purge_key('1')
       expect(storage.exist_key('1')).to be_falsey
     end
     it 'should keep items if is there is not expired keys' do
       sleep(3)
-      expect(storage.exist_key('2')).to be_truthy
+      expect(storage.key_is_expired('2')).to be_falsey
       sleep(3)
-      expect(storage.exist_key('2')).to be_falsey
+      expect(storage.key_is_expired('2')).to be_truthy
     end
   end
-
 end
