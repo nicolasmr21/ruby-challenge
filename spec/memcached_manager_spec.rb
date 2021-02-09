@@ -7,31 +7,59 @@ describe MemcachedManager do
   manager.set('2', 10, 3000, 13, 'test object y')
 
   context '#validate_request' do
-    it 'should return true if is valid' do
+    it 'should return true if is valid get' do
       expect(manager.validate_request('GET', %w[1], nil)).to be_truthy
+    end
+    it 'should return true if is valid gets' do
       expect(manager.validate_request('GETS', %w[1 2], nil)).to be_truthy
+    end
+    it 'should return true if is valid set' do
       expect(manager.validate_request('SET', %w[1 23 5000 7], 'newdata')).to be_truthy
+    end
+    it 'should return true if is valid add' do
       expect(manager.validate_request('ADD', %w[1 23 5000 7], 'newdata')).to be_truthy
+    end
+    it 'should return true if is valid replace' do
       expect(manager.validate_request('REPLACE', %w[1 23 5000 7], 'newdata')).to be_truthy
+    end
+    it 'should return true if is valid append' do
       expect(manager.validate_request('APPEND', %w[1 23 5000 7], 'newdata')).to be_truthy
+    end
+    it 'should return true if is valid prepend' do
       expect(manager.validate_request('PREPEND', %w[1 23 5000 7], 'newdata')).to be_truthy
+    end
+    it 'should return true if is valid cas' do
       expect(manager.validate_request('CAS', %w[1 23 5000 7 c0ceb73], 'newdata')).to be_truthy
     end
-    it 'should return false if is not valid' do
+    it 'should return true if is not valid get' do
       expect(manager.validate_request('GET', '', nil)).to be_falsey
+    end
+    it 'should return true if is not valid gets' do
       expect(manager.validate_request('GETS', '', nil)).to be_falsey
+    end
+    it 'should return true if is not valid set' do
       expect(manager.validate_request('SET', %w[1 23 5000], 'newdata')).to be_falsey
       expect(manager.validate_request('SET', %w[1 23 5000], nil)).to be_falsey
+    end
+    it 'should return true if is not valid add' do
       expect(manager.validate_request('ADD', %w[1 5000], 'newdata')).to be_falsey
+    end
+    it 'should return true if is not valid replace' do
       expect(manager.validate_request('REPLACE', %w[1], 'newdata')).to be_falsey
+    end
+    it 'should return true if is not valid append' do
       expect(manager.validate_request('APPEND', '', 'newdata')).to be_falsey
+    end
+    it 'should return true if is not valid prepend' do
       expect(manager.validate_request('PREPEND', %w[1 23 5000 7 25 2], 'newdata')).to be_falsey
+    end
+    it 'should return true if is not valid cas' do
       expect(manager.validate_request('CAS', %w[1 23 5000 c0ceb73], 'newdata')).to be_falsey
       expect(manager.validate_request('CAS', %w[1 23 5000 7 c0ceb73], nil)).to be_falsey
       expect(manager.validate_request('CAS', '', 'newdata')).to be_falsey
-      expect(manager.validate_request('CAS', '', '')).to be_falsey
+    end
+    it 'should return false if is not valid command' do
       expect(manager.validate_request('PUT', nil, nil)).to be_falsey
-      expect(manager.validate_request('', nil, nil)).to be_falsey
     end
   end
 
