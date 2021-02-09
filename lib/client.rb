@@ -10,25 +10,39 @@ class Client
   def initialize(host, port)
     @host = host
     @port = port
+    @socket = TCPSocket.new(@host, @port)
+    @request = nil
+    @response = nil
   end
 
   # This method allows to obtain the user entries that will be
   # used to make requests to the server.
   def start
-    socket = TCPSocket.new(@host, @port)
     puts 'MEMCACHED CLIENT STARTED, TYPE YOUR COMMAND'
-    loop do
-      command = gets.chomp
-      data = gets.chomp unless command.include? 'get'
-      request(command, data, socket)
-    end
+    request
+    listen
+    @request.join
+    @response.join
   end
 
   # This method allows you to make a request to the server
-  # and print the command response.
-  def request(command, data, socket)
-    data = data.nil? ? '' : "#{data}\r\n"
-    socket.write("#{command}\r\n#{data}")
-    puts socket.readline
+  def request
+    @request = Thread.new do
+      loop do
+        command = gets.chomp
+        data = gets.chomp unless command.include? 'get'
+        data = data.nil? ? '' : "#{data}\r\n"
+        @socket.write("#{command}\r\n#{data}")
+      end
+    end
+  end
+
+  # This method allows client to listen server responses
+  def listen
+    @response = Thread.new do
+      loop do
+        puts @socket.gets
+      end
+    end
   end
 end
