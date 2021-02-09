@@ -34,7 +34,7 @@ class MemcachedManager
     when 'CAS'
       cas(commands[0], commands[1].to_i, commands[2].to_i, commands[3].to_i, commands[4], data)
     else
-      Utils::ERROR
+      Utils::SERVER_ERROR
     end
   end
 
