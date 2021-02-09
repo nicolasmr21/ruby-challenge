@@ -41,7 +41,7 @@ class MemcachedManager
   # command complies with the memcached protocol.
   def validate_request(action, commands, data)
     if %w[GET GETS].include? action
-      commands.empty?
+      !commands.empty?
     elsif %w[SET ADD REPLACE APPEND PREPEND].include? action
       key, flags, exptime, bytes = commands
       !key.nil? && !data.nil? && (!flags.nil? && flags.to_i) && (!exptime.nil? && exptime.to_i) &&
