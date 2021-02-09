@@ -60,6 +60,7 @@ class MemcachedManager
   def get(keys)
     response = ''
     keys.each do |key|
+      @storage.purge_key(key) if @storage.key_is_expired(key)
       if @storage.exist_key(key)
         item = @storage.get(key)
         response += "VALUE #{key} #{item[1]} #{item[2]} #{item[3]}\r\n#{item[0]}\r\n"
@@ -74,6 +75,7 @@ class MemcachedManager
   def gets(keys)
     response = ''
     keys.each do |key|
+      @storage.purge_key(key) if @storage.key_is_expired(key)
       if @storage.exist_key(key)
         item = @storage.get(key)
         response += "VALUE #{key} #{item[1]} #{item[2]} #{item[3]} #{item[4]}\r\n#{item[0]}\r\n"
@@ -91,6 +93,7 @@ class MemcachedManager
   # add method is used to set a value to a new key.
   # If the key already exists, then it gives the output NOT_STORED.
   def add(key, flags, exptime, bytes, data)
+    @storage.purge_key(key) if @storage.key_is_expired(key)
     if !@storage.exist_key(key)
       @storage.set(key, [data[0...bytes], flags, exptime, bytes, SecureRandom.hex(16), Time.now])
       "STORED\r\n"
@@ -102,6 +105,7 @@ class MemcachedManager
   # replace method is used to replace the value of an existing key.
   # If the key does not exist, then it gives the output NOT_STORED.
   def replace(key, flags, exptime, bytes, data)
+    @storage.purge_key(key) if @storage.key_is_expired(key)
     if @storage.exist_key(key)
       @storage.set(key, [data[0...bytes], flags, exptime, bytes, SecureRandom.hex(16), Time.now])
       "STORED\r\n"
@@ -113,6 +117,7 @@ class MemcachedManager
   # append method is used to add some data in an existing key.
   # The data is stored after the existing data of the key.
   def append(key, bytes, data)
+    @storage.purge_key(key) if @storage.key_is_expired(key)
     item = @storage.get(key)
     if !item.nil?
       @storage.set(key, [item[0] + data[0...bytes], item[1], item[2], item[3] + bytes, item[4], item[5]])
@@ -125,6 +130,7 @@ class MemcachedManager
   # prepend command is used to add some data in an existing key.
   # The data is stored before the existing data of the key.
   def prepend(key, bytes, data)
+    @storage.purge_key(key) if @storage.key_is_expired(key)
     item = @storage.get(key)
     if !item.nil?
       @storage.set(key, [data[0...bytes] + item[0], item[1], item[2], item[3] + bytes, item[4], item[5]])
@@ -137,6 +143,7 @@ class MemcachedManager
   # cas command is used to set the data if it is not updated since last fetch.
   # If the key does not exist in Memcached, then it returns NOT_FOUND.
   def cas(key, flags, exptime, bytes, cas, data)
+    @storage.purge_key(key) if @storage.key_is_expired(key)
     item = @storage.get(key)
     if !item.nil?
       if cas == item[4]
