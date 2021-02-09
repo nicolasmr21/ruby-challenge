@@ -29,6 +29,6 @@ class Client
   def request(command, data, socket)
     data = data.nil? ? '' : "#{data}\r\n"
     socket.write("#{command}\r\n#{data}")
-    puts socket.gets
+    puts socket.readline
   end
 end
