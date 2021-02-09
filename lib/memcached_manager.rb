@@ -41,9 +41,7 @@ class MemcachedManager
   # command complies with the memcached protocol.
   def validate_request(action, commands, data)
     if %w[GET GETS].include? action
-      has_keys = !commands.empty?
-      valid_size = action == 'GET' ? commands.size == 1 : commands.size >= 1
-      has_keys && valid_size
+      commands.empty?
     elsif %w[SET ADD REPLACE APPEND PREPEND].include? action
       key, flags, exptime, bytes = commands
       !key.nil? && !data.nil? && (!flags.nil? && flags.to_i) && (!exptime.nil? && exptime.to_i) &&
@@ -57,19 +55,22 @@ class MemcachedManager
     end
   end
 
-  # get method is used to get the value stored at key.
-  # If the key does not exist in Memcached, then it returns nothing.
-  def get(key)
-    if @storage.exist_key(key)
-      item = @storage.get(key)
-      "VALUE #{key} #{item[1]} #{item[2]} #{item[3]} #{item[4]}\r\n#{item[0]}\r\nEND\r\n"
-    else
-      "END\r\n"
+  # gets method is used to get the values stored at a set of keys.
+  # If a key does not exist in Memcached, then the value of this key returns nothing.
+  def get(keys)
+    response = ''
+    keys.each do |key|
+      if @storage.exist_key(key)
+        item = @storage.get(key)
+        response += "VALUE #{key} #{item[1]} #{item[2]} #{item[3]}\r\n#{item[0]}\r\n"
+      end
     end
+    response += "END\r\n"
   end
 
   # gets method is used to get the values stored at a set of keys.
   # If a key does not exist in Memcached, then the value of this key returns nothing.
+  # unlike get this method returns the cas key
   def gets(keys)
     response = ''
     keys.each do |key|
