@@ -43,7 +43,12 @@ class Client
   def listen
     @response = Thread.new do
       loop do
-        puts @socket.gets
+        begin
+          puts @socket.gets
+        rescue StandardError => e
+          @socket.close
+          exit(1)
+        end
       end
     end
   end
