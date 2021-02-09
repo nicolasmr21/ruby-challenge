@@ -27,12 +27,12 @@ class PersistenceUnit
 
   # This method allows to know if a key is expired
   def key_is_expired(key)
-    if exist_key key
+    if exist_key(key)
       value = @storage[key]
       exptime = value[2]
       modification_date = value[5]
       diff = Time.now.to_f - modification_date.to_f
-      diff > exptime
+      return diff > exptime
     end
     false
   end
