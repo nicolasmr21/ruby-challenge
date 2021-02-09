@@ -65,7 +65,7 @@ class Server
     commands = request.split
     action = commands.shift.upcase
     data = client.gets unless request.include? 'get'
-    no_reply = request.include? 'noreply'
+    no_reply = commands.include?('noreply')
     if @manager.validate_request(action, commands, data)
       puts "PROCESS #{action} AT #{Time.now}"
       response = @manager.process(action, commands, data)

@@ -49,7 +49,7 @@ class MemcachedManager
     elsif action == 'CAS'
       key, flags, exptime, bytes, cas = commands
       !key.nil? && !data.nil? && (!flags.nil? && flags.to_i) && (!exptime.nil? && exptime.to_i) &&
-        (!bytes.nil? && bytes.to_i) && !cas.nil? && (commands.size == 4 || commands.size == 5)
+        (!bytes.nil? && bytes.to_i) && !cas.nil? && (commands.size == 5 || commands.size == 6)
     else
       false
     end
