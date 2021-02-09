@@ -1,4 +1,5 @@
 require_relative './persistence_unit'
+require_relative './utils'
 require 'securerandom'
 
 # This class represents the memcached manager that is in
@@ -33,7 +34,7 @@ class MemcachedManager
     when 'CAS'
       cas(commands[0], commands[1].to_i, commands[2].to_i, commands[3].to_i, commands[4], data)
     else
-      "ERROR\r\n"
+      Utils::ERROR
     end
   end
 
@@ -63,10 +64,10 @@ class MemcachedManager
       @storage.purge_key(key) if @storage.key_is_expired(key)
       if @storage.exist_key(key)
         item = @storage.get(key)
-        response += "VALUE #{key} #{item[1]} #{item[2]} #{item[3]}\r\n#{item[0]}\r\n"
+        response += "#{Utils::ITEM_START} #{key} #{item[1]} #{item[2]} #{item[3]}\r\n#{item[0]}\r\n"
       end
     end
-    response += "END\r\n"
+    response += Utils::GET_END
   end
 
   # gets method is used to get the values stored at a set of keys.
@@ -78,16 +79,16 @@ class MemcachedManager
       @storage.purge_key(key) if @storage.key_is_expired(key)
       if @storage.exist_key(key)
         item = @storage.get(key)
-        response += "VALUE #{key} #{item[1]} #{item[2]} #{item[3]} #{item[4]}\r\n#{item[0]}\r\n"
+        response += "#{Utils::ITEM_START} #{key} #{item[1]} #{item[2]} #{item[3]} #{item[4]}\r\n#{item[0]}\r\n"
       end
     end
-    response += "END\r\n"
+    response += Utils::GET_END
   end
 
   # set method is used to set a new value to a new or existing key.
   def set(key, flags, exptime, bytes, data)
     @storage.set(key, [data[0...bytes], flags, exptime, bytes, SecureRandom.hex(16), Time.now])
-    "STORED\r\n"
+    Utils::STORED
   end
 
   # add method is used to set a value to a new key.
@@ -96,9 +97,9 @@ class MemcachedManager
     @storage.purge_key(key) if @storage.key_is_expired(key)
     if !@storage.exist_key(key)
       @storage.set(key, [data[0...bytes], flags, exptime, bytes, SecureRandom.hex(16), Time.now])
-      "STORED\r\n"
+      Utils::STORED
     else
-      "NOT_STORED\r\n"
+      Utils::NOT_STORED
     end
   end
 
@@ -108,9 +109,9 @@ class MemcachedManager
     @storage.purge_key(key) if @storage.key_is_expired(key)
     if @storage.exist_key(key)
       @storage.set(key, [data[0...bytes], flags, exptime, bytes, SecureRandom.hex(16), Time.now])
-      "STORED\r\n"
+      Utils::STORED
     else
-      "NOT_STORED\r\n"
+      Utils::NOT_STORED
     end
   end
 
@@ -121,9 +122,9 @@ class MemcachedManager
     item = @storage.get(key)
     if !item.nil?
       @storage.set(key, [item[0] + data[0...bytes], item[1], item[2], item[3] + bytes, item[4], item[5]])
-      "STORED\r\n"
+      Utils::STORED
     else
-      "NOT_STORED\r\n"
+      Utils::NOT_STORED
     end
   end
 
@@ -134,9 +135,9 @@ class MemcachedManager
     item = @storage.get(key)
     if !item.nil?
       @storage.set(key, [data[0...bytes] + item[0], item[1], item[2], item[3] + bytes, item[4], item[5]])
-      "STORED\r\n"
+      Utils::STORED
     else
-      "NOT_STORED\r\n"
+      Utils::NOT_STORED
     end
   end
 
@@ -149,10 +150,10 @@ class MemcachedManager
       if cas == item[4]
         set(key, flags, exptime, bytes, data)
       else
-        "EXISTS \r\n"
+        Utils::EXISTS
       end
     else
-      "NOT_FOUND\r\n"
+      Utils::NOT_FOUND
     end
   end
 end

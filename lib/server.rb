@@ -1,5 +1,6 @@
 require 'socket'
 require_relative './memcached_manager'
+require_relative './utils'
 
 # This class represents the memcached server that will be in
 # charge of managing client connections, validating and
@@ -40,7 +41,6 @@ class Server
         begin
           handle_client(client)
         rescue StandardError => e
-          puts e
           shutdown(client)
         end
       end.join
@@ -71,7 +71,7 @@ class Server
       response = @manager.process(action, commands, data)
       client.write(response) unless no_reply
     else
-      client.write("CLIENT_ERROR THE INPUT DOES NOT CONFORM THE PROTOCOL\r\n")
+      client.write(Utils::CLIENT_ERROR)
     end
   end
 
