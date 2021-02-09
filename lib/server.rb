@@ -56,7 +56,6 @@ class Server
       request = client.gets
       next unless request
       response = process(request, client)
-      client.write(response)
     end
   end
 
@@ -66,11 +65,13 @@ class Server
     commands = request.split
     action = commands.shift.upcase
     data = client.gets unless request.include? 'get'
+    no_reply = request.include? 'noreply'
     if @manager.validate_request(action, commands, data)
       puts "PROCESS #{action} AT #{Time.now}"
-      @manager.process(action, commands, data)
+      response = @manager.process(action, commands, data)
+      client.write(response) unless no_reply
     else
-      "CLIENT_ERROR THE INPUT DOES NOT CONFORM THE PROTOCOL\r\n"
+      client.write("CLIENT_ERROR THE INPUT DOES NOT CONFORM THE PROTOCOL\r\n")
     end
   end
 

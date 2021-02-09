@@ -41,15 +41,15 @@ class MemcachedManager
   # command complies with the memcached protocol.
   def validate_request(action, commands, data)
     if %w[GET GETS].include? action
-      !commands.empty?
+      !commands.empty? && !commands.include?('noreply')
     elsif %w[SET ADD REPLACE APPEND PREPEND].include? action
       key, flags, exptime, bytes = commands
       !key.nil? && !data.nil? && (!flags.nil? && flags.to_i) && (!exptime.nil? && exptime.to_i) &&
-        (!bytes.nil? && bytes.to_i) && commands.size == 4
+        (!bytes.nil? && bytes.to_i) && (commands.size == 4 || commands.size == 5)
     elsif action == 'CAS'
       key, flags, exptime, bytes, cas = commands
       !key.nil? && !data.nil? && (!flags.nil? && flags.to_i) && (!exptime.nil? && exptime.to_i) &&
-        (!bytes.nil? && bytes.to_i) && !cas.nil? && commands.size == 5
+        (!bytes.nil? && bytes.to_i) && !cas.nil? && (commands.size == 4 || commands.size == 5)
     else
       false
     end
