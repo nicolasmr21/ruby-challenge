@@ -43,6 +43,14 @@ set 1 23 5000 7
 newdata
 </pre>
 
+##### SET NOREPLY
+
+<pre>
+set 1 23 5000 7 noreply
+newdata
+</pre>
+
+
 ##### ADD
 
 <pre>
