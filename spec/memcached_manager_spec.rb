@@ -166,7 +166,6 @@ describe MemcachedManager do
       item = manager.gets(['2']).split('\n')[0];
       cas = item.split[5]
       puts item, cas
-      expect(cas).to_not be_nil
       expect(manager.cas('2', 2, 5000, 2, cas, 'xy')).to be_an_include('STORED')
       expect(manager.get(['2'])).to be_an_include('VALUE 2 2 5000 2')
       expect(manager.get(['2'])).to be_an_include('xy')
