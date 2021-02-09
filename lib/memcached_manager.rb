@@ -17,7 +17,7 @@ class MemcachedManager
   def process(action, commands, data)
     case action
     when 'GET'
-      get(commands[0])
+      get(commands)
     when 'GETS'
       gets(commands)
     when 'SET'
