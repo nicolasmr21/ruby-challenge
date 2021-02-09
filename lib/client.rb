@@ -6,7 +6,9 @@ require 'socket'
 class Client
 
   # When instantiating an object of this class
-  # only the host and port values will be initialized.
+  # the host and port values will be initialized.
+  # the connection interface to the memcached server
+  # will also be created.
   def initialize(host, port)
     @host = host
     @port = port
@@ -15,8 +17,8 @@ class Client
     @response = nil
   end
 
-  # This method allows to obtain the user entries that will be
-  # used to make requests to the server.
+  # This method creates the resources to establish a
+  # communication to the server
   def start
     puts 'MEMCACHED CLIENT STARTED, TYPE YOUR COMMAND'
     request
