@@ -164,9 +164,7 @@ describe MemcachedManager do
   context '#cas' do
     it 'should update data of item if it exists and the cas key is the same' do
       item = manager.gets(['2']).split('\n')[0];
-      cas = item.split[5]
-      puts item, cas
-      expect(manager.cas('2', 2, 5000, 2, cas, 'xy')).to be_an_include('STORED')
+      expect(manager.cas('2', 2, 5000, 2, item.split[5], 'xy')).to be_an_include('STORED')
       expect(manager.get(['2'])).to be_an_include('VALUE 2 2 5000 2')
       expect(manager.get(['2'])).to be_an_include('xy')
     end
