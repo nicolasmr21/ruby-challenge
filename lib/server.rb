@@ -34,7 +34,7 @@ class Server
   # multiple clients at the same time.
   def accept_clients
     loop do
-      Thread.start(@server.accept) do |client|
+      thread = Thread.start(@server.accept) do |client|
         puts "CONNECTED TO #{client}"
         @clients[client] = Thread.current
         begin
@@ -43,6 +43,7 @@ class Server
           shutdown(client)
         end
       end
+      thread.join
     end
   end
 
