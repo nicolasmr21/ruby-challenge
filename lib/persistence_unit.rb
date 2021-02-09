@@ -34,6 +34,7 @@ class PersistenceUnit
       diff = Time.now.to_f - modification_date.to_f
       diff > exptime
     end
+    false
   end
 
   # This method allows to remove from the hash structure
