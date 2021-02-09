@@ -11,7 +11,6 @@ describe PersistenceUnit do
     it 'should return nil if key does not exist' do
       expect(@storage.get('2')).to be_nil
       expect(@storage.get('')).to be_nil
-      expect(@storage.get(@item)).to be_nil
     end
     it 'should return item if key exist' do
       expect(@storage.get('1')).to eq(@item)
@@ -25,13 +24,11 @@ describe PersistenceUnit do
       @itemy = ['setdata', 12, 100, 7, 'c0ceb73bd7d652b', Time.now]
     end
     it 'should set a new item' do
-      expect(@storage.get('1')).to be_nil
       @storage.set('1', @itemx)
       expect(@storage.get('1')).to eq(@itemx)
     end
     it 'should replace a item if exist' do
       @storage.set('1', @itemx)
-      expect(@storage.get('1')).to eq(@itemx)
       @storage.set('1', @itemy)
       expect(@storage.get('1')).to eq(@itemy)
     end

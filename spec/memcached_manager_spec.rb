@@ -6,7 +6,7 @@ describe MemcachedManager do
   manager.set('1', 12, 2000, 13, 'test object x')
   manager.set('2', 10, 3000, 13, 'test object y')
 
-  describe '#validate_request' do
+  context '#validate_request' do
     it 'should return true if is valid' do
       expect(manager.validate_request('GET', %w[1], nil)).to be_truthy
       expect(manager.validate_request('GETS', %w[1 2], nil)).to be_truthy
@@ -35,7 +35,7 @@ describe MemcachedManager do
     end
   end
 
-  describe '#get' do
+  context '#get' do
     it 'should return a item if it exists' do
       expect(manager.get(['1'])).to be_an_include 'VALUE 1 12 2000 13'
       expect(manager.get(['1'])).to be_an_include 'test object x'
@@ -49,7 +49,7 @@ describe MemcachedManager do
     end
   end
 
-  describe '#gets' do
+  context '#gets' do
     it 'should return a set of item if all of they exist' do
       expect(manager.gets(%w[1 2])).to be_an_include 'VALUE 1 12 2000 13'
       expect(manager.gets(%w[1 2])).to be_an_include 'test object x'
@@ -67,7 +67,7 @@ describe MemcachedManager do
     end
   end
 
-  describe '#set' do
+  context '#set' do
     it 'should set a new item if it does not exist' do
       expect(manager.get(['3'])).to_not be_an_include('VALUE')
       expect(manager.set('3', 10, 50, 2, 'xy')).to be_an_include('STORED')
@@ -80,7 +80,7 @@ describe MemcachedManager do
     end
   end
 
-  describe '#add' do
+  context '#add' do
     it 'should add a new item if it does not exist' do
       expect(manager.get(['4'])).to_not be_an_include('VALUE')
       expect(manager.add('4', 10, 50, 2, 'xy')).to be_an_include('STORED')
@@ -92,7 +92,7 @@ describe MemcachedManager do
     end
   end
 
-  describe '#replace' do
+  context '#replace' do
     it 'should replace a item if it exists' do
       expect(manager.get(['2'])).to be_an_include('VALUE')
       expect(manager.replace('2', 11, 50, 2, 'xy')).to be_an_include('STORED')
@@ -105,7 +105,7 @@ describe MemcachedManager do
     end
   end
 
-  describe '#append' do
+  context '#append' do
     it 'should append data on item if it exists' do
       manager.set('2', 10, 3000, 13, 'test object y')
       expect(manager.get(['2'])).to be_an_include('VALUE')
@@ -119,7 +119,7 @@ describe MemcachedManager do
     end
   end
 
-  describe '#prepend' do
+  context '#prepend' do
     it 'should prepend data on item if it exists' do
       manager.set('2', 10, 3000, 13, 'test object y')
       expect(manager.get(['2'])).to be_an_include('VALUE')
@@ -133,7 +133,7 @@ describe MemcachedManager do
     end
   end
 
-  describe '#cas' do
+  context '#cas' do
     it 'should update data of item if it exists and the cas key is the same' do
       item = manager.gets(['2']).split('\n')[0];
       cas = item.split[5]
