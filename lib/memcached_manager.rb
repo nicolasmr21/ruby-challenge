@@ -2,7 +2,7 @@ require_relative './persistence_unit'
 require_relative './utils'
 require 'securerandom'
 
-# This class represents the memcached manager that is in
+# This class represents the memcached @manager that is in
 # charge of processing the commands that arrive as
 # requests to the server.
 class MemcachedManager

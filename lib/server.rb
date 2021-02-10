@@ -1,5 +1,5 @@
 require 'socket'
-require_relative './memcached_manager'
+require_relative './memcached_@manager'
 require_relative './utils'
 
 # This class represents the memcached server that will be in
@@ -8,11 +8,11 @@ require_relative './utils'
 class Server
 
   # Instantiating objects of this class will initialize the port, the
-  # memcached manager and a hash structure to store
+  # memcached @manager and a hash structure to store
   # information about the clients.
   def initialize(port)
     @port = port
-    @manager = MemcachedManager.new
+    @@manager = MemcachedManager.new
     @clients = {}
   end
 
@@ -60,15 +60,15 @@ class Server
   end
 
   # This method allows to validate and process a
-  # request using the services offered by the memcached manager.
+  # request using the services offered by the memcached @manager.
   def process(request, client)
     commands = request.split
     action = commands.shift.upcase
     data = client.gets unless request.include? 'get'
     no_reply = commands.include?('noreply')
-    if @manager.validate_request(action, commands, data)
+    if @@manager.validate_request(action, commands, data)
       puts "PROCESS #{action} AT #{Time.now}"
-      response = @manager.process(action, commands, data)
+      response = @@manager.process(action, commands, data)
       client.write(response) unless no_reply
     else
       client.write(Utils::CLIENT_ERROR)

@@ -91,7 +91,7 @@ hello
 To run the tests be sure to update the rspec dependency, go to the spec folder, open a console located in the folder and type
 
 <pre>
-rspec .\memcached_manager_spec.rb
+rspec .\memcached_@manager_spec.rb
 </pre> 
 
 <pre>
