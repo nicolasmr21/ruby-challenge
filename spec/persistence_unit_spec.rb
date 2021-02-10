@@ -2,9 +2,12 @@ require_relative '../lib/persistence_unit'
 
 describe PersistenceUnit do
 
+  before(:context) do
+    @storage = PersistenceUnit.new
+  end
+
   context '#get' do
     before(:all) do
-      @storage = PersistenceUnit.new
       @item = ['testdata', 12, 100, 8, 'c0ceb73bd7d652b', Time.now]
       @storage.set('1', @item)
     end
@@ -19,7 +22,6 @@ describe PersistenceUnit do
 
   context '#set' do
     before(:all) do
-      @storage = PersistenceUnit.new
       @itemx = ['testdata', 12, 100, 8, 'c0ceb73bd7d652b', Time.now]
       @itemy = ['setdata', 12, 100, 7, 'c0ceb73bd7d652b', Time.now]
     end
@@ -36,7 +38,6 @@ describe PersistenceUnit do
 
   context '#exist_key' do
     before(:all) do
-      @storage = PersistenceUnit.new
       @item = ['testdata', 12, 100, 8, 'c0ceb73bd7d652b', Time.now]
       @storage.set('1', @item)
     end
@@ -50,7 +51,6 @@ describe PersistenceUnit do
 
   context '#purge_keys' do
     before(:all) do
-      @storage = PersistenceUnit.new
       itemx = ['testdata', 12, 2, 8, 'c0ceb73bd7d652b', Time.now]
       itemy = ['setdata', 12, 8, 7, 'c0ceb73bd7d652b', Time.now]
       @storage.set('1', itemx)
