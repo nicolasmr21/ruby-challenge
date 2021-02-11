@@ -1,38 +1,44 @@
 require_relative '../lib/server'
 require_relative '../lib/client'
+require_relative '../lib/utils'
 
 describe Server do
 
   before(:context) do
-    @server = Server.new(3000)
-    @client = Client.new('localhost', 3000)
+    @client = TestClient.new
+    @socket = @client.start
   end
 
-  context '#run_server' do
+  context 'accept new clients' do
+    it 'should initialize connection socket correctly' do
+      expect(@socket).to be_an_instance_of(TCPSocket)
+    end
+    it 'should accept a new client connection' do
+      expect(@socket.closed?).to be_falsey
+    end
+  end
+
+  context 'handle client and process commands' do
     before(:all) do
-      @server.run_server
+      @socket.write("set 1 23 20 7\r\nnewdata\r\n")
+      @socket.write("get 1\r\n")
+      @socket.write("add 1 5000\r\nnewdata\r\n")
+      @response_set = @socket.gets
+      @response_get = @socket.gets + @socket.gets + @socket.gets
+      @response_add = @socket.gets
     end
-    it 'should initialize the TCPServer' do
-      expect(@server.server).to_not be_nil
-      expect(@server.server).to be_an_instance_of(TCPServer)
+    it 'should process valid commands' do
+      expect(@response_set).to include Utils::STORED
+      expect(@response_get).to include "VALUE 1 23 20 7\r\nnewdata\r\n"
     end
-  end
-
-  context '#accept_clients' do
-    before(:all) do
-      @server.accept_clients
-    end
-    it 'should' do
-    end
-  end
-
-  context '#process' do
-    it 'should' do
+    it 'should show client error for not valid command' do
+      expect(@response_add).to include Utils::CLIENT_ERROR
     end
   end
+end
 
-  after do
-    @server.close
-    @client.close
+class TestClient
+  def start
+    TCPSocket.new('localhost', 3000)
   end
 end
