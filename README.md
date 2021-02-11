@@ -97,3 +97,9 @@ rspec .\memcached_@manager_spec.rb
 <pre>
 rspec .\persistence_unit_spec.rb
 </pre> 
+
+To run the servert tests be sure to run a server from the root folder, go to the spec folder, open a console located in this folder and type
+
+<pre>
+rspec .\server_spec.rb
+</pre>
