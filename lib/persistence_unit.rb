@@ -7,16 +7,26 @@ class PersistenceUnit
   # It is also called the method that purges the keys.
   def initialize
     @storage = Hash.new # "KEY" = ["DATA", "FLAGS", "EXPIRATION TIME", "BYTES", "CAS KEY", "MODIFICATION DATE"]
+    @mutex = Mutex.new
+  end
+
+  # To avoid race Conditions and Deadlocks
+  def synchronize(&block)
+    @mutex.synchronize(&block)
   end
 
   # This method allows to obtain the value associated to a key.
   def get(key)
-    @storage[key]
+    synchronize do
+      @storage[key]
+    end
   end
 
   # This method allows to set the value associated with a key
   def set(key, value)
-    @storage[key] = value
+    synchronize do
+      @storage[key] = value
+    end
   end
 
   # This method allows to know if the hash structure contains
@@ -40,7 +50,9 @@ class PersistenceUnit
   # This method allows to remove from the hash structure
   # the a key-value element.
   def purge_key(key)
-    puts "PURGE KEY: #{key}"
-    @storage.delete(key)
+    synchronize do
+      puts "PURGE KEY: #{key}"
+      @storage.delete(key)
+    end
   end
 end
